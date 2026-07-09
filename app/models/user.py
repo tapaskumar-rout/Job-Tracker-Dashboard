@@ -1,9 +1,14 @@
 from datetime import datetime
 
-from sqlalchemy import String,DateTime
+from sqlalchemy import String,DateTime,Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.database import Base
+
+is_active: Mapped[bool] = mapped_column(
+  Boolean,
+  default=True,
+)
 
 class User(Base):
   __tablename__ = "users"
@@ -31,3 +36,4 @@ class User(Base):
     DateTime,
     default=datetime.utcnow,
   )
+  
