@@ -94,11 +94,23 @@ def login(
       },
       status_code=401,
     )
+  
+  request.session["user_id"] = user.id
+  request.session["username"] = user.username
 
   return RedirectResponse(
     url="/dashboard",
     status_code=303,
   )
 
+@router.get("/logout")
+def logout(request: Request):
+
+  request.session.clear()
+
+  return RedirectResponse(
+    url="/login",
+    status_code=303,
+  )
 
 

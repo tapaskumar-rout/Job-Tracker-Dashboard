@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.routes.dashboard import router as dashboard_router
+from starlette.middleware.sessions import SessionMiddleware
 
 
 from app.core.config import APP_NAME, APP_VERSION
@@ -16,6 +17,11 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=APP_NAME,
     version=APP_VERSION,
+)
+
+app.add_middleware(
+  SessionMiddleware,
+  secret_key="job_tracker_secret_2026"
 )
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
