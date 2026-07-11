@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.routes.dashboard import router as dashboard_router
 from starlette.middleware.sessions import SessionMiddleware
+from app.routes.jobs import router as jobs_router
 
 
 from app.core.config import APP_NAME, APP_VERSION
@@ -29,3 +30,4 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(home_router)
 app.include_router(auth_router)
 app.include_router(dashboard_router)
+app.include_router(jobs_router)

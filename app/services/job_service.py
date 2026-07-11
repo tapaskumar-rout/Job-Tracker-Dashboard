@@ -24,3 +24,13 @@ class JobService:
     db.add(job)
     db.commit()
     db.refresh(job)
+
+
+  @staticmethod
+  def get_jobs_by_user(db: Session, user_id: int):
+    return (
+      db.query(Job)
+      .filter(Job.user_id == user_id)
+      .order_by(Job.id.desc())
+      .all()
+    )  
