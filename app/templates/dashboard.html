@@ -7,111 +7,418 @@ Dashboard
 {% block content %}
 
 <div class="container mt-4">
-  <h2 class="mb-4">
-      Welcome , {{ username }} 👋
-  </h2>
 
-  <div class="d-flex justify-content-between align-items-center mb-3>">
-    <h2>My Job Application</h2>
+   
 
-    <a 
-       href="/jobs/new"
-       class="btn btn-primary">
+        {% if success %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ success }}
 
-       + Add Job
-       
-    </a>
-  </div>
-
-  {% if jobs %}
-
-  <table class="table table-bordered table-hover">
-    <thead class="table-dark">
-      <tr>
-        <th>Company</th>
-        <th>Job Title</th>
-        <th>Location</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
-
-      {% for job in jobs %}
-
-      <tr>
-        <td>{{ job.company }}</td>
-        <td>{{ job.job_title }}</td>
-        <td>{{ job.location }}</td>
-        <td>{{ job.status }}</td>
-
-        <td>
-          <a 
-            href="/jobs/edit/{{ job.id }}"
-            class="btn btn-warning btn-sm">
-            
-            Edit
-
-          </a>
-          <a 
-            href="/jobs/delete/{{ job.id }}"
-            class="btn btn-danger btn-sm">
-            
-            Delete
-          
-          </a>
-        </td>
-      </tr>
-
-      {% endfor %}
-
-    </tbody>
-  </table>
-
-  {% else %}
-
-
-  <div class="alert alert-info">
-
-      No jobs added yet.
-
-  </div>
-  {% endif %}
- 
- 
-
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card shadow-sm mb-3">
-        <div class="card-body text center">
-          <h5>Total Application</h5>
-          <h2>0</h2>
+            <button 
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+            </button>
         </div>
-      </div>
+        {% endif %}
+
+         <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Job Dashboard</h2>
+
+        <div>
+
+        <a href="/jobs/export" class="btn btn-outline-primary">
+            Export CSV
+        </a>
+
+        <a href="/jobs/new" class="btn btn-success">
+            + Add New Job
+        </a>
+        
+        </div>
+
     </div>
 
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
 
-    <div class="col-md-4">
-      <div class="card shadow-sm mb-3">
-        <div class="card-body text-center">
-          <h5>Interview</h5>
-          <h2>0</h2>
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Total Jobs</h5>
+                <h2>{{ stats.total }}</h2>
+            </div>
         </div>
-      </div>
     </div>
 
-    <div class="col-md-4">
-      <div class="card shadow-sm mb-3">
-        <div class="card-body text-center">
-          <h5>Offers</h5>
-          <h2>0</h2>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5>Applied</h5>
+                <h2>{{ stats.applied }}</h2>
+            </div>
         </div>
-      </div>
     </div>
 
+    <div class="col-md-2">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5>Interview</h5>
+                <h2>{{ stats.interview }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Offer</h5>
+                <h2>{{ stats.offer }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5>Rejected</h5>
+                <h2>{{ stats.rejected }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<form method="GET" action="/dashboard" class="row mb-4">
+  <div class="col-md-10">
+     <input
+        type="text"
+        name="search"
+        class="form-control"
+        placeholder="Search by company, job title,or location..."
+        value="{{ search }}">
   </div>
-</div>  
 
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100">
+        Search
+    </button>
+  </div>
+</form>
 
+<form method="GET" action="/dashboard" class="row mb-4">
+    <div class="col-md-5">
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search..."
+            value="{{ search }}">
+
+    </div>
+
+    <div class="col-md-4">
+        <select class="form-select" name="status">
+            <option value="">All Status</option>
+
+            <option value="Applied"
+                 {% if status=="Applied" %}selected{% endif %}>
+                 Applied
+            </option>
+
+            <option value="Interview"
+                 {% if status=="Interview" %}selected{% endif %}>
+                 Interview
+            </option>
+
+            <option value="Offer"
+                 {% if status=="Offer" %}selected{% endif %}>
+                 Offer
+           </option>
+
+           <option value="Rejected"
+                 {% if status=="Rejected" %}selected{% endif %}>
+                 Rejected
+           </option>
+
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <button class="btn btn-primary w-100">
+            Apply
+        </button>
+    </div>
+</form>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h5>Application Statistics</h5>
+    </div>
+
+    <div class="card-body">
+        <canvas id="jobChart"></canvas>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-header">
+        <h5>Priority Distribution</h5>
+    </div>
+
+    <div class="card-body">
+        <canvas id="priorityChart"></canvas>
+    </div>
+</div>
+
+    <!-- Jobs Table -->
+    <div class="card shadow">
+
+        <div class="card-header">
+            <h4 class="mb-0">My Jobs</h4>
+        </div>
+
+        <div class="card-body">
+
+            {% if jobs %}
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Logo</th>
+                        <th>Company</th>
+                        <th>Job Title</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Application Date</th>
+                        <th>Notes</th>
+                        <th>Resume</th>
+                        <th width="170">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for job in jobs %}
+
+                    <tr>
+                        <td>
+                            {% if job.logo %}
+                            <img 
+                                src="/company_logos/{{ job.logo }}"
+                                width="50"
+                                height="50"
+                                class="rounded">
+                            {% else %}
+                               No logo
+                            {% endif %}       
+
+                        </td>
+
+                        <td>{{ job.company }}</td>
+
+                        <td>{{ job.job_title }}</td>
+
+                        <td>{{ job.location }}</td>
+                        
+                        
+                        <td>
+
+                            {% if job.status == "Applied" %}
+                                <span class="badge bg-primary">Applied</span>
+
+                            {% elif job.status == "Interview" %}
+                                <span class="badge bg-warning text-dark">Interview</span>
+
+                            {% elif job.status == "Offer" %}
+                                <span class="badge bg-success">Offer</span>
+
+                            {% elif job.status == "Rejected" %}
+                                <span class="badge bg-danger">Rejected</span>
+
+                            {% else %}
+                                {{ job.status }}
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {% if job.priority == "High" %}
+                            <span class="badge bg-danger">High
+                            </span>
+
+                            {% elif job.priority == "Medium" %}
+                            <span class="badge bg-warning text-dark">Medium</span>
+
+                            {% else %}
+                            <span class="badge bg-success">Low</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td>{{ job.application_date }}</td>
+
+                        <td>{{ job.notes }}</td>
+
+                        <td>
+                            {% if job.resume %}
+                            <a 
+                              href="/uploads/{{ job.resume }}"
+                              target="_blank"
+                              class="btn btn-info btn-sm">
+                              View PDF
+                            </a>
+
+                            {% else %}
+                            <span class="text-muted">No Resume</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            <a
+                                href="/jobs/{{ job.id }}/edit"
+                                class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <form
+                                action="/jobs/{{ job.id }}/delete"
+                                method="POST"
+                                style="display:inline;">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Delete this job?')">
+
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="/dashboard?page={{ page-1 }}">
+                           Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for p in range(1, total_pages + 1) %}
+                    <li class="page-item {% if p == page %}active{% endif %}">
+                        <a class="page-link"
+                           href="/dashboard?page={{ p }}">
+                           {{ p }}
+                        </a>
+                    </li>
+                    {% endfor %}
+
+                    {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/dashboard?page={{ page+1 }}">
+                            Next
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            {% else %}
+
+            <div class="alert alert-info text-center">
+
+                <h5>No jobs found.</h5>
+
+                <p>Click the <strong>Add New Job</strong> button to add your first job application.</p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const canvas = document.getElementById("jobChart");
+
+    if (!canvas) {
+        console.log("Canvas not found");
+        return;
+    }
+
+    new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels: ["Applied", "Interview", "Offer", "Rejected"],
+            datasets: [{
+                label: "Applications",
+                data: [
+                    Number("{{ stats.applied }}"),
+                    Number("{{ stats.interview }}"),
+                    Number("{{ stats.offer }}"),
+                    Number("{{ stats.rejected }}")
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+});
+
+document.addEventListener("DOMContentLoaded", function (){
+    const priorityCanvas = document.getElementById("priorityChart");
+
+    if (priorityCanvas) {
+        new Chart(priorityCanvas, {
+            type: "pie",
+
+            data: {
+                labels: ["High", "Medium", "Low"],
+
+                datasets: [{
+                    data: [
+                        {{ stats.high }},
+                        {{ stats.medium }},
+                        {{ stats.low }}
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
 {% endblock %}

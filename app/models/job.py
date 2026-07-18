@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime,date
 
-from sqlalchemy import String ,ForeignKey, DateTime
+from sqlalchemy import String ,ForeignKey, DateTime, Date
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 
 from app.database.database import Base
@@ -31,6 +31,10 @@ class Job(Base):
     nullable=True
   )
 
+  resume : Mapped[str] = mapped_column(
+    String,
+    nullable=True)
+
   user_id:Mapped[str] = mapped_column(
     ForeignKey("users.id")
   )
@@ -38,4 +42,19 @@ class Job(Base):
   user = relationship(
     "User",
     back_populates="jobs",
-  )                     
+  )
+
+  logo: Mapped[str | None] = mapped_column(
+    String,
+    nullable=True
+  )              
+
+  application_date: Mapped[date] = mapped_column(
+    Date,
+    default=date.today,
+  )   
+
+  priority: Mapped[str] = mapped_column(
+    String(20),
+    default="Medium",
+  )

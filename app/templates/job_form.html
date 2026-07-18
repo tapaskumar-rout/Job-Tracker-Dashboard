@@ -14,7 +14,7 @@ Add Job
           <h3>Add New Job Application</h3>
         </div>
         <div class="card-body">
-          <form method="POST" action="/jobs/new">
+          <form method="POST" action="/jobs/new" enctype="multipart/form-data">
             <div class="mb-3">
               <label class="form-label">Company</label>
               <input 
@@ -42,6 +42,15 @@ Add Job
             </div>
 
             <div class="mb-3">
+              <label class="form-label">Application Date</label>
+
+              <input 
+                 type="date"
+                 class="form-control"
+                 name="application_date">
+            </div>
+
+            <div class="mb-3">
               <label class="form-label">Status</label>
 
               <select
@@ -56,6 +65,15 @@ Add Job
             </div>
 
             <div class="mb-3">
+              <label class="form-label">Priority</label>
+              <select class="form-select" name="priority">
+                <option value="High">HIgh</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
               <label class="form-label">
                 Notes
               </label>
@@ -64,6 +82,25 @@ Add Job
                   class="form-control"
                   rows="4"
                   name="notes"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Resume (PDF)</label>
+
+              <input 
+                  type="file"
+                  class="form-control"
+                  name="resume"
+                  accept=".pdf">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Company Logo</label>
+              <input
+                 type="file"
+                 class="form-control"
+                 name="logo"
+                 accept="image/png,image/jpeg,image/jpg">
             </div>
 
             <button 

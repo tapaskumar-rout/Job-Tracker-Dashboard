@@ -27,6 +27,18 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+app.mount(
+  "/company_logos",
+  StaticFiles(directory="company_logos"),
+  name="company_logos",
+)
+
+app.mount(
+  "/uploads",
+  StaticFiles(directory="uploads"),
+  name="uploads"
+)
+
 app.include_router(home_router)
 app.include_router(auth_router)
 app.include_router(dashboard_router)

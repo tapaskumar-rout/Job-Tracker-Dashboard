@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Job
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow">
+                <div class="card-header">
+                    <h3>Edit Job</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST" enctype="multipart/form-data">
+
+                        <div class="mb-3">
+                            <label class="form-label">Company</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="company"
+                                value="{{ job.company }}"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Job Title</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="job_title"
+                                value="{{ job.job_title }}"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="location"
+                                value="{{ job.location }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+
+                            <select
+                                class="form-select"
+                                name="status">
+
+                                <option value="Applied"
+                                    {% if job.status == "Applied" %}selected{% endif %}>
+                                    Applied
+                                </option>
+
+                                <option value="Interview"
+                                    {% if job.status == "Interview" %}selected{% endif %}>
+                                    Interview
+                                </option>
+
+                                <option value="Offer"
+                                    {% if job.status == "Offer" %}selected{% endif %}>
+                                    Offer
+                                </option>
+
+                                <option value="Rejected"
+                                    {% if job.status == "Rejected" %}selected{% endif %}>
+                                    Rejected
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+
+                            <textarea
+                                class="form-control"
+                                rows="4"
+                                name="notes">{{ job.notes }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Replace Resume (PDF)</label>
+
+                            <input
+                               type="file"
+                               class="form-control"
+                               name="resume"
+                               accept=".pdf">
+
+                            {% if job.resume %}
+                            <div class="mt-2">
+                                <a href="/uploads/{{ job.resume }}" target="_blank">
+                                    View Current Resume
+                                </a>
+                            </div>   
+                            {% endif %}
+                        </div>
+
+                        <button
+                            class="btn btn-primary"
+                            type="submit">
+                            Update Job
+                        </button>
+
+                        <a
+                            href="/dashboard"
+                            class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
