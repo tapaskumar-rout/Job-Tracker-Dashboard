@@ -81,10 +81,15 @@ Edit Job
                         <div class="mb-3">
                             <label class="form-label">Notes</label>
 
-                            <textarea
-                                class="form-control"
-                                rows="4"
-                                name="notes">{{ job.notes }}</textarea>
+                            <input
+                               type="hidden"
+                               id="notes"
+                               name="notes"
+                               value="{{ job.notes }}">
+                            <div 
+                               id="editor"
+                               style="height:200px;">
+                            </div>   
                         </div>
 
                         <div class="mb-3">

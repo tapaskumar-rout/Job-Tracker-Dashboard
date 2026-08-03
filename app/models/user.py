@@ -31,7 +31,12 @@ class User(Base):
     String(255),
     nullable=False
   )
-
+  
+  reset_token: Mapped[str | None] = mapped_column(
+    String,
+    nullable=True,
+  )
+  
   created_at: Mapped[datetime] = mapped_column(
     DateTime,
     default=datetime.utcnow,
@@ -42,4 +47,7 @@ class User(Base):
     back_populates="user",
     cascade="all, delete-orphan",
   )
+
+  is_admin = mapped_column(Boolean, default=False)
   
+ 

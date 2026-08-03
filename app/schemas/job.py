@@ -12,3 +12,4 @@ class JobCreate(BaseModel):
   priority: str = "Medium"
   resume: Optional[str] = None
   logo: Optional[str] = None
+  follow_up_date: Optional[date] = None

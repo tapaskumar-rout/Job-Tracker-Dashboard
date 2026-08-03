@@ -58,3 +58,8 @@ class Job(Base):
     String(20),
     default="Medium",
   )
+
+  follow_up_date: Mapped[date] = mapped_column(
+    Date,
+    nullable=True
+  )

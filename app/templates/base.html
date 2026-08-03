@@ -12,6 +12,8 @@
     <!-- Custom CSS -->
 
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
@@ -21,6 +23,16 @@
             💼 Job Tracker Dashboard
         </a>
     </div>
+    <div class="d-flex align-items-center">
+        <button
+             id="themeToggle"
+             class="btn btn-outline-light">
+             
+       </button>
+    </div>
+    <a href="/admin" class="btn btn-warning">
+        Admin
+    </a>
 </nav>    
 
 <div class="container mt-5">
@@ -44,6 +56,7 @@
             Logout
         </a>
     </div>
+    
 </nav>
 
 
@@ -56,6 +69,10 @@
 {% block scripts %}
 {% endblock %}
 
+<script src="/static/js/theme.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script src="/static/js/editor.js"></script>
 
 </body>
 </html>

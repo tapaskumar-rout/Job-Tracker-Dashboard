@@ -30,6 +30,32 @@ def new_job(request: Request):
     context={},
   )
 
+@router.get("/jobs/{job_id}")
+def view_job(
+   job_id: int,
+   request: Request,
+   db: Session = Depends(get_db),
+):
+   if "user_id" not in request.session:
+      return RedirectResponse("/login", status_code=303)
+   
+   job = JobService.get_job_by_id(
+      db,
+      job_id,
+      request.session["user_id"],
+   )
+
+   if not job:
+      return RedirectResponse("/dashboard", status_code=303)
+   
+   return templates.TemplateResponse(
+      request=request,
+      name="job_details.html",
+      context={
+         "job": job,
+      },
+   )
+
 @router.post("/jobs/new")
 def create_job(
     request: Request,
@@ -43,6 +69,7 @@ def create_job(
     priority: str = Form(...),
     resume: UploadFile = File(None),
     logo: UploadFile = File(None),
+    follow_up_date: date | None = Form(None),
 ):
   
     if "user_id" not in request.session:
@@ -91,6 +118,7 @@ def create_job(
       priority=priority,
       notes=notes,
       application_date=application_date,
+      follow_up_date=follow_up_date,
       resume=resume_filename,
       logo=logo_filename,
     )

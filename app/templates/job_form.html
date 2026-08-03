@@ -78,10 +78,14 @@ Add Job
                 Notes
               </label>
 
-              <textarea
-                  class="form-control"
-                  rows="4"
-                  name="notes"></textarea>
+              <input
+                 type="hidden"
+                 id="notes"
+                 name="notes">
+               <div
+                  id="editor"
+                  style="height:200px;">
+               </div>  
             </div>
 
             <div class="mb-3">
@@ -101,6 +105,16 @@ Add Job
                  class="form-control"
                  name="logo"
                  accept="image/png,image/jpeg,image/jpg">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Follow-up Date</label>
+
+              <input
+                  type="date"
+                  name="follow_up_date"
+                  class="form-control">
+                  
             </div>
 
             <button 

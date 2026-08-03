@@ -53,4 +53,28 @@ class AuthService:
          return None
       
       return user
+  
+  @staticmethod
+  def get_user_by_email(
+     db: Session,
+     email: str,
+  ):
+     return (
+        db.query(User)
+        .filter(User.email == email)
+        .first()
+     )
       
+  @staticmethod
+  def reset_password(db,email, password):
+     user = AuthService.get_user_by_email(db, email)
+
+     if not user:
+        return False
+     
+     user.hashed_password = hash_password(password)
+
+     db.commit()
+     db.refresh(user)
+
+     return True

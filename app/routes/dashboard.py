@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from app.services.notification_service import NotificationService
 
 from app.database.database import get_db
 from app.services.job_service import JobService
@@ -17,6 +18,7 @@ def dashboard(
   status: str ="",
   page: int = Query(default=1),
   db: Session = Depends(get_db),
+  sort: str = Query(default="newest"),
   ):
 
     if "user_id" not in request.session:
@@ -40,6 +42,15 @@ def dashboard(
        )  
        total_pages = 1
 
+    elif sort != "newest":
+       jobs = JobService.sort_jobs(
+          db,
+          request.session["user_id"],
+          sort,
+
+       ) 
+       total_pages = 1
+
     else:
        jobs, total_pages = JobService.get_jobs_paginated(
           db,
@@ -49,6 +60,27 @@ def dashboard(
        )
     
     stats = JobService.get_statistics(
+       db,
+       request.session["user_id"],
+    )
+
+    notifications = NotificationService.get_notifications(
+       db,
+       request.session["user_id"],
+    )
+    print(notifications)
+    
+    today_jobs = JobService.get_today_followups(
+       db,
+       request.session["user_id"],
+    )
+
+    today_followups = JobService.get_today_followups(
+       db,
+       request.session["user_id"],
+    )
+
+    monthly_stats = JobService.get_monthly_statistics(
        db,
        request.session["user_id"],
     )
@@ -67,6 +99,11 @@ def dashboard(
         "search": search,
         "status": status,
         "success": success,
+        "sort" : sort,
+        "monthly_stats": monthly_stats,
+        "today_followups": today_followups,
+        "today_jobs": today_jobs,
+        "notifications": notifications,
       },
     )
     

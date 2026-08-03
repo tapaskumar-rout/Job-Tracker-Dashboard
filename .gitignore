@@ -30,3 +30,7 @@ htmlcov/
 # Build
 dist/
 build/
+
+# User uploads
+uploads/
+company_logos/

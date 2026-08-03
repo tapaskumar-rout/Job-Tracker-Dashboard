@@ -39,6 +39,73 @@ Dashboard
 
     </div>
 
+    {% if today_jobs %}
+
+    <div class="alert alert-warning">
+        <h5>Today's Follow-ups</h5>
+
+        <ul class="mb-0">
+            {% for job in today_jobs %}
+
+            <li>
+                <strong>{{ job.company }}</strong>
+                - {{ job.job_title }}
+            </li>
+
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    {% endif %}
+
+     {% if notifications.overdue %}
+<div class="alert alert-danger mb-3">
+    <h5 >🔴 Overdue Follow-ups</h5>
+
+    <ul class="mb-0">
+        {% for job in notifications.overdue %}
+        <li>
+            <strong>{{ job.company }}</strong>
+            - {{ job.job_title }}
+            ({{ job.follow_up_date }})
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if notifications.today %}
+<div class="alert alert-warning mb-3">
+    <h5>🟡 Today's Follow-ups</h5>
+
+    <ul class="mb-0">
+        {% for job in notifications.today %}
+        <li>
+            <strong>{{ job.company }}</strong>
+            - {{ job.job_title }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if notifications.upcoming %}
+<div class="alert alert-success mb-3">
+    <h5>🟢 Tomorrow's Follow-ups</h5>
+
+    <ul class="mb-0">
+        {% for job in notifications.upcoming %}
+        <li>
+            <strong>{{ job.company }}</strong>
+            - {{ job.job_title }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+    
+
     <!-- Statistics Cards -->
     <div class="row mb-4">
 
@@ -143,6 +210,50 @@ Dashboard
 
         </select>
     </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Monthly Application</h5>
+                </div>
+
+                <div class="card-body">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+       </div>
+    </div>
+
+    <div class="col-md-3">
+        <select class="form-select" name="sort">
+            <option value="newest"
+            {% if sort=="newest" %}selected{% endif %}>
+            Newest First
+           </option>
+
+           <option value="oldest"
+               {% if sort=="oldest" %}selected{% endif %}>
+               Oldest First
+            </option>
+
+            <option value="company"
+               {% if sort=="company" %}selected{% endif %}>
+               Company (A-Z)
+            </option>
+
+            <option value="company_desc"
+                {% if sort=="company_desc" %}selected{% endif %}>
+                Company (Z-A)
+          </option>
+
+            <option value="priority"
+                {% if sort=="priority" %}selected{% endif %}>
+                High Priority
+            </option>
+          
+        </select>
+    </div>
 
     <div class="col-md-3">
         <button class="btn btn-primary w-100">
@@ -159,6 +270,61 @@ Dashboard
     <div class="card-body">
         <canvas id="jobChart"></canvas>
     </div>
+</div>
+
+{% if today_followups %}
+<div class="alert alert-warning">
+    <h5>🔔 Today's Follow-ups</h5>
+
+    <ul class="mb-0">
+        {% for job in today_followups %}
+        <li>
+            <strong>{{ job.company }}</strong>
+            _
+            {{ job.job_title }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Total Jobs</h6>
+                <h2>{{ stats.total_jobs }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Pending</h6>
+                <h2>{{ stats.pending }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Offers</h6>
+                <h2>{{ stats.offers }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Success Rate</h6>
+                <h2>{{ stats.success_rate }}</h2>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="card shadow mt-4">
@@ -259,7 +425,7 @@ Dashboard
                         
                         <td>{{ job.application_date }}</td>
 
-                        <td>{{ job.notes }}</td>
+                        <td>{{ job.notes | safe }}</td>
 
                         <td>
                             {% if job.resume %}
@@ -276,6 +442,11 @@ Dashboard
                         </td>
 
                         <td>
+                            <a
+                              href="/jobs/{{ job.id }}"
+                              class="btn btn-primary btn-sm">
+                              View
+                            </a>
 
                             <a
                                 href="/jobs/{{ job.id }}/edit"
@@ -415,6 +586,41 @@ document.addEventListener("DOMContentLoaded", function (){
             },
             options: {
                 responsive: true
+            }
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded",function (){
+    const monthlyCanvas = document.getElementById("monthlyChart");
+
+    if (monthlyCanvas) {
+        new Chart(monthlyCanvas, {
+            type: "line",
+            data:{
+                labels: {{ monthly_stats["labels"] | tojson }},
+
+                datasets: [{
+                    label: "Applications",
+                    data: {{ monthly_stats["values"] | tojson}},
+
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.3
+                }]
+
+                
+            },
+            options: {
+                responsive:true,
+                scales: {
+                    y:{
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
             }
         });
     }

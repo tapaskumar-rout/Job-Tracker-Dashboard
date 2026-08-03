@@ -1,7 +1,10 @@
+from app.services.email_service import EmailService
+from urllib.parse import quote
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+import secrets
 
 from app.database.database import get_db
 from app.schemas.user import UserRegister
@@ -113,4 +116,87 @@ def logout(request: Request):
     status_code=303,
   )
 
+@router.get("/forgot-password")
+def forgot_password(request: Request):
+  return templates.TemplateResponse(
+    request=request,
+    name="forgot_password.html",
+    context={},
+  )
+
+@router.post("/forgot-password")
+async def forgot_password(
+  request: Request,
+  email: str = Form(...),
+  db: Session = Depends(get_db),
+):
+  user = AuthService.get_user_by_email(
+    db,
+    email,
+  )
+
+  if not user:
+    request.session["error"] = "Email not found."
+
+  reset_link = f"http://127.0.0.1:8000/reset-password?email={quote(email)}"
+
+  await EmailService.send_reset_email(
+    email,
+    reset_link,
+  )
+
+  request.session["success"] = (
+    "Password reset linkhas been sent to your email."
+  )
+
+
+
+  return RedirectResponse(
+    "/login",
+    status_code=303,
+  )
+
+@router.get("/reset-password")
+def reset_password_page(
+  request: Request,
+  email: str,
+):
+  
+  return templates.TemplateResponse(
+    request=request,
+    name="reset_password.html",
+    context={
+      "email": email,
+    },
+  )
+
+@router.post("/reset-password")
+def reset_password(
+  request: Request,
+  email: str = Form(...),
+  password: str = Form(...),
+  db: Session = Depends(get_db),
+):
+  
+  success = AuthService.reset_password(
+    db,
+    email,
+    password,
+  )
+
+  if not success:
+    request.session["error"] = "User not found."
+
+    return RedirectResponse(
+      "/forgot-password",
+      status_code=303,
+    )
+  
+  request.session["success"] = "Password reset successfully"
+  
+  return RedirectResponse(
+    "/login",
+    status_code=303,
+  )
+ 
 

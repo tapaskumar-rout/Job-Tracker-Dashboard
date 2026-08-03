@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}
+Job Details
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h3>{{ job.company }}</h3>
+            {% if job.status == "Applied" %}
+            <span class="badge bg-primary">Applied</span>
+
+            {% elif job.status == "Interview" %}
+            <span class="badge bg-warning text-dark">Interview</span>
+
+            {% elif job.status == "Offer" %}
+            <span class="badge bg-success">Offer</span>
+
+            {% elif job.status == "Rejected" %}
+            <span class="badge bg-danger">Rejected</span>
+        
+            {% else %}
+            <span class="badge bg-primary">
+                {{ job.status }}
+            </span>
+            {% endif %}
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4 text-center">
+
+                    {% if job.logo %}
+                        <img
+                            src="/company_logos/{{ job.logo }}"
+                            class="img-fluid rounded"
+                            style="max-height:150px;">
+                    {% else %}
+                        <img
+                            src="https://placehold.co/200x150?text=No+Logo"
+                            class="img-fluid rounded">
+                    {% endif %}
+
+                </div>
+
+                <div class="col-md-8">
+
+                    <table class="table">
+
+                        <tr>
+                            <th>Job Title</th>
+                            <td>{{ job.job_title }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Location</th>
+                            <td>{{ job.location }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Application Date</th>
+                            <td>{{ job.application_date }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Priority</th>
+                            <td>
+                              {% if job.priority == "High" %}
+                              <span class="badge bg-danger">High</span>
+
+                              {% elif job.priority == "Medium" %}
+                              <span class="badge bg-warning text-dark">Medium</span>
+
+                              {% else %}
+                              <span class="badge bg-success">Low</span>
+
+                              {% endif %}
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Notes</th>
+                            <td>{{ job.notes | safe }}</td>
+                        </tr>
+
+                        <tr>
+                          <th>Resume</th>
+                          <td>
+                            {% if job.resume %}
+
+                            <a 
+                              href="/uploads/{{ job.resume }}"
+                              target="_blank"
+                              class="btn btn-success btn-sm">
+                              Download Resume
+                            </a>
+                            {% else %}
+
+                            No Resume Uploaded
+
+                            {% endif %}
+
+                          </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="mt-4">
+  <a 
+    href="/dashboard"
+    class="btn btn-secondary">
+    ← Back
+  </a>
+
+  <a 
+    href="/jobs/{{ job.id }}/edit"
+    class="btn btn-warning">
+    Edit Job
+  </a>
+</div>
+
+{% endblock %}
+
